@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import moment from "moment";
 import Layout from "../Component/Layout/Layout";
 import * as actions from "../Store/Actions/index";
+import axios from "../axios"
 
 const Detail_task = props => {
     const id = props.location.search.substring(1).split("=")[1]
@@ -15,6 +16,21 @@ const Detail_task = props => {
     const onChangeLabel = (event) => {
         setLabel(event.target.value)
         setIsShowBtn(true)
+    }
+
+    const onDeleteHandeler = (taskId) => {
+        let permission = window.confirm("Sure you want to delete?")
+        if (permission == true) {
+            axios.delete("/task/delete/" + taskId).then((res) => {
+                if (res.status == 200) {
+                    toast("Delete successfull!", { type: toast.TYPE.SUCCESS, toastId: "deleted" })
+                    props.history.push("/")
+                }
+            }).catch((error) => {
+                console.log(error.response.data)
+                toast("Delete unsuccessfull!", { type: toast.TYPE.ERROR, toastId: "deleted" })
+            })
+        }
     }
 
     const onShowUser = (userId) => {
@@ -35,15 +51,20 @@ const Detail_task = props => {
     }
 
     useState(() => {
-        document.body.style.overflow="hidden"
+        //document.body.style.overflow="hidden"
     })
 
 
 
-    let user=""
-    if(props.userData.role=="user")
-    {
-        user=props.userData._id
+    let user = ""
+    if (props.userData.role == "user") {
+        user = props.userData._id
+    }
+    let base64String = null
+    if (data.task_image) {
+        base64String = btoa(new Uint8Array(data.task_image.data).reduce(function (data, byte) {
+            return data + String.fromCharCode(byte);
+        }, ''));
     }
     return (
         <Layout>
@@ -54,7 +75,11 @@ const Detail_task = props => {
                             <div className="col-md-12">
                                 <div className="card">
                                     <div className="card-header">
-                                        <strong className="card-title">Detail Task</strong>
+                                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                            <strong className="card-title">Detail Task</strong>
+                                            <div><button type="button" className="btn btn-outline-secondary"><i className="fas fa-pencil-alt"></i></button>&nbsp;
+                                            <button type="button" onClick={() => onDeleteHandeler(id)} className="btn btn-outline-danger"><i className="fas fa-trash"></i></button></div>
+                                        </div>
                                     </div>
 
                                     <div className="card-body">
@@ -66,9 +91,9 @@ const Detail_task = props => {
                                             <div className="row">
                                                 <div className="col-md-8">
                                                     <h3 className="mb-3">Description</h3>
-                                                    <div className="jumbotron" style={{backgroundColor:'#f7f7f7'}}>
+                                                    <div className="jumbotron" style={{ backgroundColor: '#f7f7f7' }}>
                                                         {data.description}
-                                        `           </div>
+                                                    </div>
                                                 </div>
                                                 <div className="col-md-4">
                                                     <h3>Users</h3>
@@ -81,10 +106,7 @@ const Detail_task = props => {
                                                 <div className="col-md-8 text-left">
                                                     <div>
                                                         {/* <h3>Ordered</h3> */}
-                                                        <ul className="vue-ordered">
-                                                            <li><h4>Start Date : {moment(data.start_date).format('YYYY-MM-DD')}</h4></li>
-                                                            <li><h4>End Date : {moment(data.end_date).format('YYYY-MM-DD')}</h4></li>
-                                                        </ul>
+                                                        {base64String != null && <img src={"data:image/png;base64," + base64String} style={{ height: "100%", width: "100%" }} alt="" />}
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4">
@@ -94,7 +116,11 @@ const Detail_task = props => {
                                                             return (<option value={item._id} key={item._id}>{item.title}</option>)
                                                         })}
                                                     </select> &nbsp;&nbsp;&nbsp;
-                                                    {isShowBtn && label != data.label && <button type="button" onClick={() => props.onStatuUpdate(id, label,user,props.userData.role)} className="btn btn-primary">Update</button>}</div>
+                                                    {isShowBtn && label != data.label && <button type="button" onClick={() => props.onStatuUpdate(id, label, user, props.userData.role)} className="btn btn-primary">Update</button>}</div>
+                                                    <ul className="vue-ordered">
+                                                        <li><h4>Start Date : {moment(data.start_date).format('YYYY-MM-DD')}</h4></li>
+                                                        <li><h4>End Date : {moment(data.end_date).format('YYYY-MM-DD')}</h4></li>
+                                                    </ul>
                                                 </div>
                                             </div>
                                         </div>
@@ -115,7 +141,7 @@ const mapStateToProps = state => {
         tasks: state.task.tasks,
         labels: state.label.labelData,
         allUsers: state.auth.allUserData,
-        userData:state.auth.userData
+        userData: state.auth.userData
     }
 }
 
