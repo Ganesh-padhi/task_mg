@@ -24,7 +24,6 @@ class Add_task extends Component {
             description: {
                 value: "",
                 validation: {
-                    required: true
                 },
                 valid: false,
                 touched: false
@@ -73,6 +72,10 @@ class Add_task extends Component {
             })
             this.setState({ options: data })
         }
+        if(this.props.operation=="update")
+        {
+            console.log("operation = "+this.props.operation)
+        }
     }
 
     onFileChange = async (event) => {
@@ -101,7 +104,7 @@ class Add_task extends Component {
     }
 
     onSubmit = () => {
-        if (this.state.controls.title.touched != true || this.state.controls.description.touched != true || this.state.controls.label.touched != true || this.state.controls.start_date.touched != true || this.state.controls.end_date.touched != true) {
+        if (this.state.controls.title.touched != true || this.state.controls.label.touched != true || this.state.controls.start_date.touched != true || this.state.controls.end_date.touched != true) {
             toast("All field are required", {
                 type: toast.TYPE.ERROR,
                 toastId: "requiredfield"
@@ -148,7 +151,7 @@ class Add_task extends Component {
         let style = { textColor: "red", border: "1px solid red", height: "45px" }
         return (
 
-            <Modal show closemodal={this.props.modalClose} title="Add Task" Submit={this.onSubmit}>
+            <Modal show closemodal={this.props.modalClose} title={this.props.operation=="update"?"Update Task":"Add Task"} Submit={this.onSubmit}>
                 <form action="" style={{ fontSize: '15px' }} method="post" encType="multipart/form-data" className="form-horizontal">
                     <div className="row form-group">
                         <div className="col col-md-3">
@@ -161,11 +164,10 @@ class Add_task extends Component {
                     </div>
                     <div className="row form-group">
                         <div className="col col-md-3">
-                            <label htmlFor="textarea-input" className=" form-control-label">Description<span style={{color:"red"}}>*</span></label>
+                            <label htmlFor="textarea-input" className=" form-control-label">Description</label>
                         </div>
                         <div className="col-12 col-md-9">
-                            <textarea name="textarea-input" id="textarea-input" defaultValue={this.state.controls.description.value} rows="6" style={this.state.controls.description.valid == false && this.state.controls.description.touched == true ? style : {}} placeholder="Content..." onChange={(e) => this.onChangeHandler(e, 'description')} className="form-control"></textarea>
-                            {this.state.controls.description.valid == false && this.state.controls.description.touched == true ? <label style={{ color: 'red', fontSize: "15px" }}>Description is require</label> : null}
+                            <textarea name="textarea-input" id="textarea-input" defaultValue={this.state.controls.description.value} rows="6"  placeholder="Content..." onChange={(e) => this.onChangeHandler(e, 'description')} className="form-control"></textarea>
                         </div>
                     </div>
                     <div className="row form-group">

@@ -176,7 +176,7 @@ const Home = props => {
                                         {props.userData.role == "admin" ? <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={() => setIsModalOpen(true)} >
                                             <i className="zmdi zmdi-plus"></i>add task</button> : null}
                                     </span>
-                                    {isModalOpen && <Add_task modalClose={onModalCLose} />}
+                                    {isModalOpen && <Add_task modalClose={onModalCLose} operation="create" />}
                                 </h1>
 
                                 <hr className="line-seprate" />

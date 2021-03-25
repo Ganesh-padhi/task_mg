@@ -5,6 +5,7 @@ import moment from "moment";
 import Layout from "../Component/Layout/Layout";
 import * as actions from "../Store/Actions/index";
 import axios from "../axios"
+import Update_task from "../Pages/Add_task";
 
 const Detail_task = props => {
     const id = props.location.search.substring(1).split("=")[1]
@@ -12,7 +13,11 @@ const Detail_task = props => {
     console.log(data)
     const [isShowBtn, setIsShowBtn] = useState(false)
     const [label, setLabel] = useState(data.label)
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
 
+    const onModalHandeler=()=>{
+        setIsUpdateModalOpen(!isUpdateModalOpen)
+    }
     const onChangeLabel = (event) => {
         setLabel(event.target.value)
         setIsShowBtn(true)
@@ -23,12 +28,13 @@ const Detail_task = props => {
         if (permission == true) {
             axios.delete("/task/delete/" + taskId).then((res) => {
                 if (res.status == 200) {
-                    toast("Delete successfull!", { type: toast.TYPE.SUCCESS, toastId: "deleted" })
+                    props.onTaskLoad("","admin")
                     props.history.push("/")
+                    toast("Delete successfully!", { type: toast.TYPE.SUCCESS, toastId: "deleted" })
                 }
             }).catch((error) => {
                 console.log(error.response.data)
-                toast("Delete unsuccessfull!", { type: toast.TYPE.ERROR, toastId: "deleted" })
+                toast("Delete not success!", { type: toast.TYPE.ERROR, toastId: "deleted" })
             })
         }
     }
@@ -77,7 +83,8 @@ const Detail_task = props => {
                                     <div className="card-header">
                                         <div style={{ display: "flex", justifyContent: "space-between" }}>
                                             <strong className="card-title">Detail Task</strong>
-                                            <div><button type="button" className="btn btn-outline-secondary"><i className="fas fa-pencil-alt"></i></button>&nbsp;
+                                            <div><button type="button" onClick={onModalHandeler} className="btn btn-outline-secondary"><i className="fas fa-pencil-alt"></i></button>&nbsp;
+                                            {isUpdateModalOpen && <Update_task modalClose={onModalHandeler} operation="update"/>}
                                             <button type="button" onClick={() => onDeleteHandeler(id)} className="btn btn-outline-danger"><i className="fas fa-trash"></i></button></div>
                                         </div>
                                     </div>
@@ -147,7 +154,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onStatuUpdate: (taskId, labelId, userId, role) => dispatch(actions.taskLabelUpdate(taskId, labelId, userId, role))
+        onStatuUpdate: (taskId, labelId, userId, role) => dispatch(actions.taskLabelUpdate(taskId, labelId, userId, role)),
+        onTaskLoad: (userId, role) => dispatch(actions.taskLoad(userId, role))
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Detail_task)
