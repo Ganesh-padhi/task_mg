@@ -67,8 +67,15 @@ class Register extends Component {
                 touched: false
             }
         },
-        loading: false
+        loading: false,
+        image:""
     }
+
+    onFileChange =(event) => {
+        const files = event.target.files
+        this.setState({ image: files[0] })
+    } 
+
     onChangeHandler = (event, inputkey) => {
         const updatedList = {
             ...this.state.controls,
@@ -98,16 +105,14 @@ class Register extends Component {
         }
         else {
             this.setState({loading:true})
-            const registerData={
-                first_name: this.state.controls.fname.value,
-                last_name:this.state.controls.lname.value,
-                username:this.state.controls.userName.value,
-                password:this.state.controls.password.value,
-                email:this.state.controls.email.value
-            }
-            console.log(registerData)
-            axios.post("/user/register",registerData).then((res)=>{
-                console.log(res)
+            const formData = new FormData()
+            formData.append("image", this.state.image)
+            formData.append('first_name', this.state.controls.fname.value)
+            formData.append('last_name', this.state.controls.lname.value)
+            formData.append('username', this.state.controls.userName.value)
+            formData.append('password', this.state.controls.password.value)
+            formData.append('email', this.state.controls.email.value)
+            axios.post("/user/register",formData,{ headers: { 'Content-Type': 'multipart/form-data'}}).then((res)=>{
                 this.setState({loading:false})
                 toast("You successfully register, please verify your email before login", {
                     type: toast.TYPE.SUCCESS,
@@ -127,6 +132,10 @@ class Register extends Component {
         if (this.state.loading == false) {
             form = (<>
                 <form onSubmit={this.onSubmitHandler} method="post">
+                    <div className="form-group">
+                        <label>Select Profile pic</label>
+                        <input className="au-file au-input--full" onChange={this.onFileChange} type="file" />
+                    </div>
                     <div className="form-group">
                         <label>First Name<span style={{ color: "red" }}> *</span></label>
                         <input className="au-input au-input--full" style={this.state.controls.fname.valid == false && this.state.controls.fname.touched == true ? style : {}} type="text" name="fname" onChange={(e) => this.onChangeHandler(e, 'fname')} value={this.state.controls.fname.value} placeholder="First Name" />
@@ -197,7 +206,7 @@ class Register extends Component {
                             <div className="login-content"  >
                                 <div className="login-logo">
                                     <a href="#">
-                                        <img src="assets/images/icon/logo.png" alt="CoolAdmin" />
+                                        <img src="assets/images/icon/logo.png" style={{width:"100px",height:"100px"}} alt="CoolAdmin" />
                                     </a>
                                 </div>
                                 <div className="login-form">

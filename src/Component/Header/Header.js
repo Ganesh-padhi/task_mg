@@ -4,6 +4,12 @@ import { connect } from "react-redux";
 import * as actions from "../../Store/Actions/index";
 const Header = props => {
     const history = useHistory()
+    let base64String = null
+    if (props.userData.avatar) {
+        base64String = btoa(new Uint8Array(props.userData.avatar.data).reduce(function (data, byte) {
+            return data + String.fromCharCode(byte);
+        }, ''));
+    }
     return (
         <>
             {/* <!-- HEADER DESKTOP--> */}
@@ -11,9 +17,9 @@ const Header = props => {
                 <div className="section__content section__content--p35">
                     <div className="header3-wrap">
                         <div className="header__logo">
-                            <a href="#">
-                                <img src="assets/images/icon/logo-white.png" alt="CoolAdmin" />
-                            </a>
+                            <Link to="/">
+                                <img src="assets/images/icon/logo.png" style={{width:"60px",height:"60px"}} alt="CoolAdmin" />
+                            </Link>
                         </div>
                         <div className="header__navbar">
                             <ul className="list-unstyled">
@@ -109,7 +115,7 @@ const Header = props => {
                             <div className="account-wrap">
                                 <div className="account-item account-item--style2 clearfix js-item-menu">
                                     <div className="image">
-                                        <img src="assets/images/icon/avatar-01.jpg" alt={props.userData.username} />
+                                        {props.userData.avatar? <img src={"data:image/png;base64,"+base64String} alt={props.userData.username} /> : <img src="assets/images/icon/avatar-01.jpg" alt={props.userData.username} />}
                                     </div>
                                     <div className="content">
                                         <a className="js-acc-btn" href="#">{props.userData.username}</a>
@@ -159,8 +165,8 @@ const Header = props => {
                 <div className="header-mobile__bar">
                     <div className="container-fluid">
                         <div className="header-mobile-inner">
-                            <a className="logo" href="index.html">
-                                <img src="assets/images/icon/logo-white.png" alt="CoolAdmin" />
+                            <a className="logo" href="">
+                            <img src="assets/images/icon/logo.png" alt="CoolAdmin" style={{width: "60px",height: "60px"}}/>
                             </a>
                             <button className="hamburger hamburger--slider" type="button">
                                 <span className="hamburger-box">
@@ -349,7 +355,7 @@ const Header = props => {
                     <div className="account-wrap">
                         <div className="account-item account-item--style2 clearfix js-item-menu">
                             <div className="image">
-                                <img src="assets/images/icon/avatar-01.jpg" alt={props.userData.username} />
+                            {props.userData.avatar? <img src={"data:image/png;base64,"+base64String} alt={props.userData.username} /> : <img src="assets/images/icon/avatar-01.jpg" alt={props.userData.username} />}
                             </div>
                             <div className="content">
                                 <a className="js-acc-btn" href="#">{props.userData.username}</a>

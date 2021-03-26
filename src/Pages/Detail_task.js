@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import moment from "moment";
 import Layout from "../Component/Layout/Layout";
 import * as actions from "../Store/Actions/index";
@@ -10,17 +11,23 @@ import Update_task from "../Pages/Add_task";
 const Detail_task = props => {
     const id = props.location.search.substring(1).split("=")[1]
     const [data] = props.tasks.filter((item) => item._id == id)
-    console.log(data)
     const [isShowBtn, setIsShowBtn] = useState(false)
     const [label, setLabel] = useState(data.label)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
 
-    const onModalHandeler=()=>{
+
+    const onModalHandeler = () => {
         setIsUpdateModalOpen(!isUpdateModalOpen)
     }
     const onChangeLabel = (event) => {
         setLabel(event.target.value)
         setIsShowBtn(true)
+    }
+    const getLabelName = (labelId) => {
+        const label = props.labels.filter((label) => label._id == labelId)[0]
+        return (
+            <span style={{ backgroundColor: label.color, boxSizing: "border-box", color: "white", padding: '0 7px', borderRadius: '20px' }}>{label.title}</span>
+        )
     }
 
     const onDeleteHandeler = (taskId) => {
@@ -33,7 +40,6 @@ const Detail_task = props => {
                     toast("Delete successfully!", { type: toast.TYPE.SUCCESS, toastId: "deleted" })
                 }
             }).catch((error) => {
-                console.log(error.response.data)
                 toast("Delete not success!", { type: toast.TYPE.ERROR, toastId: "deleted" })
             })
         }
@@ -44,11 +50,16 @@ const Detail_task = props => {
             const [data] = props.allUsers.filter((item) => {
                 return item._id == userId
             })
-            console.log(data)
+            let userBase64String = null
+            if (data.avatar) {
+                userBase64String = btoa(new Uint8Array(data.avatar.data).reduce(function (data, byte) {
+                    return data + String.fromCharCode(byte);
+                }, ''));
+            }
             return (
                 <div >
                     <i className="fa">
-                        <img className="rounded-circle mx-auto d-block" style={{ width: "20px" }} src="assets/images/icon/avatar-01.jpg" alt="Card image cap" /></i>
+                        {data.avatar? <img className="rounded-circle mx-auto d-block" style={{ width: "20px" }} src={"data:image/png;base64," + userBase64String} alt="Card image cap" />:<img className="rounded-circle mx-auto d-block" style={{ width: "20px" }} src="assets/images/icon/avatar-01.jpg" alt="Card image cap" />}</i>
                     <strong className="card-title pl-2" >{data.username}</strong>
                 </div>
             )
@@ -60,12 +71,22 @@ const Detail_task = props => {
         //document.body.style.overflow="hidden"
     })
 
-
-
-    let user = ""
-    if (props.userData.role == "user") {
-        user = props.userData._id
+    const onBtnUpdate = () => {
+        let user = ""
+        if (props.userData.role == "user") {
+            user = props.userData._id
+        }
+        const permission = window.confirm("Sure you want to update label?")
+        if (permission == true) {
+            props.onStatuUpdate(id, label, user, props.userData.role)
+        }
+        else {
+            document.getElementById("selectLabel").value = data.label
+            setLabel(data.label)
+        }
     }
+
+
     let base64String = null
     if (data.task_image) {
         base64String = btoa(new Uint8Array(data.task_image.data).reduce(function (data, byte) {
@@ -83,9 +104,11 @@ const Detail_task = props => {
                                     <div className="card-header">
                                         <div style={{ display: "flex", justifyContent: "space-between" }}>
                                             <strong className="card-title">Detail Task</strong>
-                                            <div><button type="button" onClick={onModalHandeler} className="btn btn-outline-secondary"><i className="fas fa-pencil-alt"></i></button>&nbsp;
-                                            {isUpdateModalOpen && <Update_task modalClose={onModalHandeler} operation="update"/>}
-                                            <button type="button" onClick={() => onDeleteHandeler(id)} className="btn btn-outline-danger"><i className="fas fa-trash"></i></button></div>
+                                            {props.userData.role == "admin" ? (<div>
+                                                <button type="button" onClick={onModalHandeler} className="btn btn-outline-secondary"><i className="fas fa-pencil-alt"></i></button>&nbsp;
+                                                {isUpdateModalOpen && <Update_task btnTitle="Update" modalClose={onModalHandeler} id={id} operation="update" />}
+                                                <button type="button" onClick={() => onDeleteHandeler(id)} className="btn btn-outline-danger"><i className="fas fa-trash"></i></button>
+                                            </div>) : null}
                                         </div>
                                     </div>
 
@@ -117,14 +140,16 @@ const Detail_task = props => {
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4">
-                                                    <h3>Label :</h3>
-                                                    <div style={{ display: "flex" }}><select className="form-control" onChange={onChangeLabel} defaultValue={label}>
+
+                                                    {props.userData.role != "admin" ? (<><h3>Label :</h3><div style={{ display: "flex" }}><select className="form-control" name="selectLabel" id="selectLabel" onChange={onChangeLabel} defaultValue={label}>
                                                         {props.labels.map((item) => {
                                                             return (<option value={item._id} key={item._id}>{item.title}</option>)
                                                         })}
                                                     </select> &nbsp;&nbsp;&nbsp;
-                                                    {isShowBtn && label != data.label && <button type="button" onClick={() => props.onStatuUpdate(id, label, user, props.userData.role)} className="btn btn-primary">Update</button>}</div>
+                                                    {isShowBtn && label != data.label && <button type="button" onClick={onBtnUpdate} className="btn btn-primary">Update</button>}</div></>) : null}
+
                                                     <ul className="vue-ordered">
+                                                        {props.userData.role == "admin" ? <li><h4>Lable : {getLabelName(data.label)}</h4></li> : null}
                                                         <li><h4>Start Date : {moment(data.start_date).format('YYYY-MM-DD')}</h4></li>
                                                         <li><h4>End Date : {moment(data.end_date).format('YYYY-MM-DD')}</h4></li>
                                                     </ul>

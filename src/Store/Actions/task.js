@@ -57,7 +57,6 @@ export const taskLoad = (userId,role) => {
     }
     axios.get(url).then((res) => {
       const data=res.data
-      console.log(data)
       if(data.length==0)
       {
         dispatch(taskFail("No data found"))          
@@ -72,7 +71,6 @@ export const taskLoad = (userId,role) => {
 export const onTaskSort=(value,order,userId="")=>{
   return dispatch=>{
     dispatch(taskChange())
-    console.log('value='+value+',order='+order)
     let url="/task/all?sortBy="+value+":"+order
     if(userId)
     {
@@ -100,7 +98,6 @@ export const onFetchUserTasks=(userId)=>{
 export const onSearchTasks=(value,userId)=>{
   return dispatch=>{
     dispatch(taskChange())
-    console.log("/task/filter?id="+userId+"&search="+value)
     axios.get("/task/filter?id="+userId+"&search="+value).then((res) => {
       dispatch(taskSuccess(res.data))
     }).catch((error) => {
@@ -113,11 +110,9 @@ export const onSearchTasks=(value,userId)=>{
 
 export const taskLabelUpdate = (taskId,labelId,userId,role) => {
   return dispatch => {
-    console.log('taskId='+taskId+',labelId='+labelId)
     axios.patch("/task/edit_status/"+taskId,{label:labelId}).then((res) => {
         dispatch(taskLoad(userId,role))
     }).catch((error) => {
-      console.log(error)
       dispatch(taskFail(error))
     })
   }

@@ -17,8 +17,6 @@ const Home = props => {
         if (props.userData.role == "admin") {
             user = document.getElementById("sortUser").value
         }
-
-        //console.log("value = "+value+" order = "+order+" user = "+user)
         if (user == "") {
             props.onSortTasks(value, order, "")
         }
@@ -55,7 +53,6 @@ const Home = props => {
     const onDragEndHandeler = (result) => {
         if (result.destination != null) {
             if (result.source.droppableId == "done") {
-                console.log("toast")
                 toast("This task already done", { type: toast.TYPE.INFO, toastId: "doneTask" })
             }
             else if (result.destination.droppableId != result.source.droppableId) {
@@ -65,7 +62,6 @@ const Home = props => {
                 }
 
                 const statusId = props.labels.filter((label) => label.title == result.destination.droppableId)[0]._id
-                console.log("done d" + statusId)
                 props.onStatuUpdate(result.draggableId, statusId,user,props.userData.role)
             }
         }
@@ -85,9 +81,6 @@ const Home = props => {
             user = document.getElementById("sortUser").value
         }
         const search = document.getElementById("Search").value
-        console.log("search=" + search + "user=" + user + "order=" + order + "value" + value)
-        console.log("isDataChange=" + props.isDataChange)
-        console.log("tasks=" + props.tasks.length + "error=" + props.error)
         if (props.tasks.length == 0 && search == "" && props.error == null) {
             props.onTaskLoad(props.userData._id, props.userData.role)
             props.onLabelLoad()
@@ -150,7 +143,7 @@ const Home = props => {
                         <div className="row">
                             <div className="col-md-12">
                                 <h1 className="title-4">Welcome back
-                                <span>John!</span>
+                                <span>&nbsp;{props.userData.username}!</span>
 
                                     <span style={{ float: "right" }}>
                                         <input className="au-input--w300 au-input--style2" style={{ borderRadius: "7px" }} onChange={onSearchChange} type="text" name="Search" id="Search" placeholder="Search" />
@@ -176,7 +169,7 @@ const Home = props => {
                                         {props.userData.role == "admin" ? <button className="au-btn au-btn-icon au-btn--green au-btn--small" onClick={() => setIsModalOpen(true)} >
                                             <i className="zmdi zmdi-plus"></i>add task</button> : null}
                                     </span>
-                                    {isModalOpen && <Add_task modalClose={onModalCLose} operation="create" />}
+                                    {isModalOpen && <Add_task modalClose={onModalCLose} btnTitle="Submit" operation="create" />}
                                 </h1>
 
                                 <hr className="line-seprate" />

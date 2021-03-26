@@ -121,7 +121,7 @@ class Login extends Component {
                             <div className="login-content">
                                 <div className="login-logo">
                                     <a href="#">
-                                        <img src="assets/images/icon/logo.png" alt="CoolAdmin" />
+                                        <img src="assets/images/icon/logo.png" style={{width:"100px",height:"100px"}} alt="CoolAdmin" />
                                     </a>
                                 </div>
                                 <div className="login-form">
