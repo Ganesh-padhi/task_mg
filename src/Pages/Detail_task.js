@@ -7,6 +7,7 @@ import Layout from "../Component/Layout/Layout";
 import * as actions from "../Store/Actions/index";
 import axios from "../axios"
 import Update_task from "../Pages/Add_task";
+import ConfirmModal from "../Component/UI/ConfirmModal/ConfirmModal";
 
 const Detail_task = props => {
     const id = props.location.search.substring(1).split("=")[1]
@@ -14,10 +15,23 @@ const Detail_task = props => {
     const [isShowBtn, setIsShowBtn] = useState(false)
     const [label, setLabel] = useState(data.label)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
+    const [isDeleteTaskModal, setIsDeleteTaskModal] = useState(false)
+    const [isUpdateStatusModal, setIsUpdateStatusModal] = useState(false)
 
 
     const onModalHandeler = () => {
         setIsUpdateModalOpen(!isUpdateModalOpen)
+    }
+    const onDeleteTaskModalHandeler = () => {
+        setIsDeleteTaskModal(!isDeleteTaskModal)
+    }
+    const onUpdateStatusModalHandeler = () => {
+        if(isUpdateStatusModal==true)
+        {
+            document.getElementById("selectLabel").value = data.label
+            setLabel(data.label)
+        }
+        setIsUpdateStatusModal(!isUpdateStatusModal)
     }
     const onChangeLabel = (event) => {
         setLabel(event.target.value)
@@ -30,19 +44,16 @@ const Detail_task = props => {
         )
     }
 
-    const onDeleteHandeler = (taskId) => {
-        let permission = window.confirm("Sure you want to delete?")
-        if (permission == true) {
-            axios.delete("/task/delete/" + taskId).then((res) => {
-                if (res.status == 200) {
-                    props.onTaskLoad("","admin")
-                    props.history.push("/")
-                    toast("Delete successfully!", { type: toast.TYPE.SUCCESS, toastId: "deleted" })
-                }
-            }).catch((error) => {
-                toast("Delete not success!", { type: toast.TYPE.ERROR, toastId: "deleted" })
-            })
-        }
+    const onDeleteHandeler = () => {
+        axios.delete("/task/delete/" + id).then((res) => {
+            if (res.status == 200) {
+                props.onTaskLoad("", "admin")
+                props.history.push("/")
+                toast("Delete successfully!", { type: toast.TYPE.SUCCESS, toastId: "deleted" })
+            }
+        }).catch((error) => {
+            toast("Delete not success!", { type: toast.TYPE.ERROR, toastId: "deleted" })
+        })
     }
 
     const onShowUser = (userId) => {
@@ -59,7 +70,7 @@ const Detail_task = props => {
             return (
                 <div >
                     <i className="fa">
-                        {data.avatar? <img className="rounded-circle mx-auto d-block" style={{ width: "20px" }} src={"data:image/png;base64," + userBase64String} alt="Card image cap" />:<img className="rounded-circle mx-auto d-block" style={{ width: "20px" }} src="assets/images/icon/avatar-01.jpg" alt="Card image cap" />}</i>
+                        {data.avatar ? <img className="rounded-circle mx-auto d-block" style={{ width: "20px" }} src={"data:image/png;base64," + userBase64String} alt="Card image cap" /> : <img className="rounded-circle mx-auto d-block" style={{ width: "20px" }} src="assets/images/icon/avatar-01.jpg" alt="Card image cap" />}</i>
                     <strong className="card-title pl-2" >{data.username}</strong>
                 </div>
             )
@@ -76,14 +87,9 @@ const Detail_task = props => {
         if (props.userData.role == "user") {
             user = props.userData._id
         }
-        const permission = window.confirm("Sure you want to update label?")
-        if (permission == true) {
-            props.onStatuUpdate(id, label, user, props.userData.role)
-        }
-        else {
-            document.getElementById("selectLabel").value = data.label
-            setLabel(data.label)
-        }
+        props.onStatuUpdate(id, label, user, props.userData.role)
+        setIsUpdateStatusModal(false)
+        toast("Task status update successfully!",{type:toast.TYPE.SUCCESS,toastId:"updateStatus"})
     }
 
 
@@ -95,6 +101,8 @@ const Detail_task = props => {
     }
     return (
         <Layout>
+            {isDeleteTaskModal && <ConfirmModal show title="Close task" content="Are you sure you want to close task?" confirm={onDeleteHandeler} closemodal={onDeleteTaskModalHandeler} />}
+            {isUpdateStatusModal && <ConfirmModal show title="Update task status" content="Are you sure you want to update task status?" confirm={onBtnUpdate} closemodal={onUpdateStatusModalHandeler} />}
             <div style={{ padding: "10px" }} >
                 <div className="section__content section__content--p30">
                     <div className="container-fluid">
@@ -107,7 +115,7 @@ const Detail_task = props => {
                                             {props.userData.role == "admin" ? (<div>
                                                 <button type="button" onClick={onModalHandeler} className="btn btn-outline-secondary"><i className="fas fa-pencil-alt"></i></button>&nbsp;
                                                 {isUpdateModalOpen && <Update_task btnTitle="Update" modalClose={onModalHandeler} id={id} operation="update" />}
-                                                <button type="button" onClick={() => onDeleteHandeler(id)} className="btn btn-outline-danger"><i className="fas fa-trash"></i></button>
+                                                <button type="button" onClick={onDeleteTaskModalHandeler} className="btn btn-outline-danger"><i className="fas fa-trash"></i></button>
                                             </div>) : null}
                                         </div>
                                     </div>
@@ -146,7 +154,7 @@ const Detail_task = props => {
                                                             return (<option value={item._id} key={item._id}>{item.title}</option>)
                                                         })}
                                                     </select> &nbsp;&nbsp;&nbsp;
-                                                    {isShowBtn && label != data.label && <button type="button" onClick={onBtnUpdate} className="btn btn-primary">Update</button>}</div></>) : null}
+                                                    {isShowBtn && label != data.label && <button type="button" onClick={onUpdateStatusModalHandeler} className="btn btn-primary">Update</button>}</div></>) : null}
 
                                                     <ul className="vue-ordered">
                                                         {props.userData.role == "admin" ? <li><h4>Lable : {getLabelName(data.label)}</h4></li> : null}

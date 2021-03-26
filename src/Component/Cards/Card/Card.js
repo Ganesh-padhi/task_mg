@@ -35,9 +35,42 @@ const Card = ({ data, labels, allUsers, user }) => {
                 return data + String.fromCharCode(byte);
             }, ''));
         }
+
+
+        // return (<>
+        //     <div style={{ position: 'relative', display: 'inline' }}>
+        //             <img style={{
+        //                 position: 'absolute',
+        //                 left: 0,
+        //                 zIndex: 2
+        //             }} width="30px" className="rounded-circle mx-auto d-block" src={"data:image/png;base64," + base64String} />
+        //             <img style={{
+        //                 position: 'absolute',
+        //                 left: '20px',
+        //                 zIndex: 1
+        //             }} width="30px" className="rounded-circle mx-auto d-block" src={"data:image/png;base64," + base64String} />
+        //             <img style={{
+        //                 position: 'absolute',
+        //                 left: '40px',
+        //                 zIndex: 0.5
+        //             }} width="30px" className="rounded-circle mx-auto d-block" src={"data:image/png;base64," + base64String} />
+        //             <span style={{
+        //                 position: 'absolute',
+        //                 left: '50px',
+        //                 fontSize: '15px',
+        //                 top: '6px'
+        //             }}>+1</span>
+        //         {/* <span title={userData.username} style={{ display: "flex" }}>{userData.avatar ? <img className="rounded-circle mx-auto d-block" style={{ width: "30px" }} src={"data:image/png;base64," + base64String} alt="Card image cap" /> : <img className="rounded-circle mx-auto d-block" style={{ width: "30px" }} src="assets/images/icon/avatar-01.jpg" alt="Card image cap" />} {(data.assign_to.length > 1) ? `+${data.assign_to.length - 1}` : null}</span> */}
+        //     </div>
+        // </>
+        // )
+
+
+
+
         return (<>
             <i className="fa">
-                <span title={userData.username} style={{ display: "flex" }}>{userData.avatar ? <img className="rounded-circle mx-auto d-block" style={{ width: "30px" }} src={"data:image/png;base64," + base64String} alt="Card image cap" /> :<img className="rounded-circle mx-auto d-block" style={{ width: "30px" }} src="assets/images/icon/avatar-01.jpg" alt="Card image cap" />} {(data.assign_to.length > 1) ? `+${data.assign_to.length - 1}` : null}</span></i>
+                <span title={userData.username} style={{ display: "flex" }}>{userData.avatar ? <img className="rounded-circle mx-auto d-block" style={{ width: "30px" }} src={"data:image/png;base64," + base64String} alt="Card image cap" /> : <img className="rounded-circle mx-auto d-block" style={{ width: "30px" }} src="assets/images/icon/avatar-01.jpg" alt="Card image cap" />} {(data.assign_to.length > 1) ? `+${data.assign_to.length - 1}` : null}</span></i>
         </>
         )
     }

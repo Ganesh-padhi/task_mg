@@ -149,7 +149,7 @@ const Home = props => {
                                         <input className="au-input--w300 au-input--style2" style={{ borderRadius: "7px" }} onChange={onSearchChange} type="text" name="Search" id="Search" placeholder="Search" />
                                         &nbsp;
                                         {props.userData.role == "admin" ? <select className="btn" style={{ padding: " 8px 8px", borderRadius: "7px" }} onChange={onFetchTaskOfUser} name="sortUser" id="sortUser" defaultValue="" >
-                                            <option value="" >Select User</option>
+                                            <option value="" >All User</option>
                                             {
                                                 props.allUsers.map((item) => {
                                                     return (<option key={item._id} value={item._id}>{item.username}</option>)
@@ -203,17 +203,17 @@ const Home = props => {
                                         </div>
                                     )}
                                 </Droppable>
-                                <Droppable droppableId="process">
+                                <Droppable droppableId="progress">
                                     {(provided) => (
                                         <div className="col-md-6 col-lg-3" {...provided.droppableProps} ref={provided.innerRef}>
                                             {/* <!-- TOP CAMPAIGN--> */}
 
                                             <div className="top-campaign" >
-                                                <h3 className="title-3 m-b-30">In process</h3>
+                                                <h3 className="title-3 m-b-30">In progress</h3>
                                                 <hr></hr>
                                                 <div className="table-responsive" >
                                                     <table className=" table-top-campaign" >
-                                                        {props.tasks != null ? <Cards cardData={props.tasks}  filterdata="process" cardLabels={props.labels}/> : null}
+                                                        {props.tasks != null ? <Cards cardData={props.tasks}  filterdata="progress" cardLabels={props.labels}/> : null}
                                                         {provided.placeholder}
                                                     </table>
                                                 </div>
@@ -227,7 +227,7 @@ const Home = props => {
                                         <div className="col-md-6 col-lg-3" {...provided.droppableProps} ref={provided.innerRef}>
                                             {/* <!-- TOP CAMPAIGN--> */}
                                             <div className="top-campaign">
-                                                <h3 className="title-3 m-b-30">Require review</h3>
+                                                <h3 className="title-3 m-b-30">review required</h3>
                                                 <hr></hr>
                                                 <div className="table-responsive">
 
